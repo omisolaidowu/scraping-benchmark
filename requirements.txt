@@ -1,0 +1,7 @@
+beautifulsoup4
+firecrawl-py
+patchright
+python-dotenv
+PyYAML
+requests
+seleniumbase

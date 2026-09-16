@@ -45,7 +45,7 @@ Unlike the Standard and Stealth benchmarks, this test requires each approach to 
 
 The Turnstile benchmark is treated as a separate workflow experiment because its execution requirements differ from the page retrieval tests used in the other categories.
 
-See [`turnstile-scraping-benchmark/README.md`](turnstile/README.md) for the methodology, configurations, extraction workflow, validation criteria, and run instructions.
+See [`turnstile/README.md`](turnstile-scraping-benchmark//README.md) for the methodology, configurations, extraction workflow, validation criteria, and run instructions.
 
 ## Approaches
 

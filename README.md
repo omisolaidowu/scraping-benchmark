@@ -110,6 +110,7 @@ scraping-benchmarks/
     ├── config/
     ├── scrapers/
     └── results/
+```
 
 ### Shared files
 

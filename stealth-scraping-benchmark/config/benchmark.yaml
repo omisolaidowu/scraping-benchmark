@@ -1,16 +1,11 @@
 benchmark:
   iterations: 2
-
   timeout_seconds: 60
-
   save_raw_output: true
-
   save_screenshots: false
-
   output_dir: results
-
   approaches:
     - firecrawl
-    # - browserless
-    # - seleniumbase
-    # - surfsky
+    - browserless
+    - surfsky
+    - seleniumbase

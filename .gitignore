@@ -12,8 +12,11 @@ __pycache__/
 # Benchmark results
 standard-scraping-benchmark/results/
 scraping-benchmark-stealth/results/
+results/
+turnstile-scraping-benchmark/results/
 standard_protected_summary.csv
 stealth_protected_summary.csv
+*.csv
 
 # Logs
 *.log

@@ -1,6 +1,6 @@
 # Web Scraping Benchmarks
 
-A reproducible benchmark for evaluating web scraping approaches across unprotected and bot-protected websites.
+A reproducible benchmark for evaluating web scraping approaches across unprotected, bot-protected, and authenticated web environments.
 
 The repository compares four approaches:
 
@@ -9,12 +9,13 @@ The repository compares four approaches:
 - SeleniumBase
 - Surfsky
 
-The benchmark is organized into two separate categories:
+The benchmark is organized into three separate categories:
 
 - **Standard Scraping Benchmark** — evaluates the approaches using their standard configurations.
-- **Stealth Scraping Benchmark** — evaluates the approaches using documented stealth-oriented configurations.
+- **Stealth Scraping Benchmark** — evaluates the approaches using their stealth-oriented configurations.
+- **Turnstile Login Benchmark** — evaluates the approaches against an interactive login workflow protected by Cloudflare Turnstile.
 
-The two categories are analyzed separately rather than combined into a single score.
+The three categories are analyzed separately rather than combined into a single score.
 
 ## Benchmark Categories
 
@@ -22,41 +23,51 @@ The two categories are analyzed separately rather than combined into a single sc
 
 The Standard benchmark evaluates Firecrawl, Browserless, SeleniumBase, and Surfsky using their standard benchmark configurations.
 
-It includes an unprotected baseline as a control together with bot-protected target environments.
+It includes the unprotected ScrapingCourse Ecommerce page as a baseline, together with bot-protected target environments representing Cloudflare, DataDome, and Akamai.
 
-See [`standard-scraping-benchmark/README.md`](standard-scraping-benchmark/README.md) for the methodology, configurations, extraction tasks, validation criteria, and run instructions.
+See [`standard/README.md`](standard-scraping-benchmark/README.md) for the methodology, configurations, extraction tasks, validation criteria, and run instructions.
 
 ### Stealth Scraping Benchmark
 
-The Stealth benchmark evaluates the same approaches using documented stealth-oriented configurations.
+The Stealth benchmark evaluates the same approaches using their stealth-oriented configurations.
 
-The purpose is to measure how these configurations affect scraping success and latency relative to the Standard benchmark.
+The purpose is to measure how these configurations perform against the selected protected target environments in terms of scraping success, execution time, and reliability.
 
 The Stealth benchmark is treated as a separate configuration experiment. Its results are not combined with or used to replace the Standard benchmark results.
 
-See [`scraping-benchmark-stealth/README.md`](scraping-benchmark-stealth/README.md) for the methodology, configurations, extraction tasks, validation criteria, and run instructions.
+See [`stealth/README.md`](stealth-scraping-benchmark/README.md) for the methodology, configurations, extraction tasks, validation criteria, and run instructions.
+
+### Turnstile Login Benchmark
+
+The Turnstile benchmark evaluates the approaches against an interactive login workflow protected by Cloudflare Turnstile.
+
+Unlike the Standard and Stealth benchmarks, this test requires each approach to complete the login workflow, reach the authenticated dashboard, and then extract and validate the expected data.
+
+The Turnstile benchmark is treated as a separate workflow experiment because its execution requirements differ from the page retrieval tests used in the other categories.
+
+See [`turnstile-scraping-benchmark/README.md`](turnstile/README.md) for the methodology, configurations, extraction workflow, validation criteria, and run instructions.
 
 ## Approaches
 
-Both benchmark categories evaluate:
+All benchmark categories evaluate:
 
 - **Firecrawl** — managed scraping API
 - **Browserless** — managed browser and scraping infrastructure
 - **SeleniumBase** — local browser automation
 - **Surfsky** — managed browser infrastructure
 
-Each category defines the specific configuration used for each approach.
+Each benchmark category defines the specific configuration and execution workflow used for each approach.
 
 ## Methodology
 
-Both benchmark categories follow the same core principles:
+The benchmark categories follow the same core principles:
 
 1. Freeze the extraction tasks and validation rules before definitive runs.
 2. Validate each adapter with a small smoke test before running the benchmark.
 3. Apply the same number of iterations consistently across approach × target combinations.
 4. Measure end-to-end scraping reliability rather than provider-level success responses alone.
 5. Preserve raw experimental evidence so individual results can be audited.
-6. Analyze Standard and Stealth configurations separately.
+6. Analyze the Standard, Stealth, and Turnstile configurations separately.
 
 A run is considered successful only when the expected target data is retrieved and passes the benchmark's extraction validator.
 
@@ -74,6 +85,7 @@ Post-response cleanup is excluded from the timed interval where applicable.
 
 ```text
 scraping-benchmarks/
+
 ├── .env.example
 ├── .gitignore
 ├── requirements.txt
@@ -85,13 +97,19 @@ scraping-benchmarks/
 │   ├── scrapers/
 │   └── results/
 │
-└── scraping-benchmark-stealth/
+├── stealth-scraping-benchmark/
+│   ├── README.md
+│   ├── benchmark/
+│   ├── config/
+│   ├── scrapers/
+│   └── results/
+│
+└── turnstile-scraping-benchmark/
     ├── README.md
     ├── benchmark/
     ├── config/
     ├── scrapers/
     └── results/
-```
 
 ### Shared files
 

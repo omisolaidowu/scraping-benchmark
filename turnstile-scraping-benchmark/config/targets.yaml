@@ -3,44 +3,49 @@ targets:
     name: ScrapingCourse
     url: https://www.scrapingcourse.com/ecommerce/
     protection: none
-
     extraction:
       record_selector: 'li.product[data-products="item"]'
       expected_records: 16
-
       fields:
         product_name:
           selector: 'h2.product-name'
-
         price:
           selector: 'span[data-testid="product-price"]'
-
         product_url:
           selector: 'a.woocommerce-LoopProduct-link'
           attribute: href
 
-    browserless:
-      endpoint: content
 
-
-  - id: scrapingcourse_cloudflare
-    name: ScrapingCourse Cloudflare Challenge
-    url: https://www.scrapingcourse.com/cloudflare-challenge
+  - id: scrapingcourse_turnstile_login
+    name: ScrapingCourse Turnstile Login
+    url: https://www.scrapingcourse.com/login/cf-turnstile
     protection: cloudflare
 
     extraction:
-      record_selector: 'div#challenge-info[data-testid="challenge-info"]'
-      expected_records: 1
-
+      record_selector: 'div.product-item'
+      expected_records: 12
       fields:
-        challenge_status:
-          selector: 'h2#challenge-title[data-testid="challenge-title"]'
-          expected_text: 'You bypassed the Cloudflare challenge! :D'
+        product_name:
+          selector: '.product-name'
 
-    browserless:
-      endpoint: unblock
-      proxy: residential
+        price:
+          selector: '.product-price'
 
+        product_url:
+          selector: 'a'
+          attribute: href
+
+    interaction:
+      type: turnstile_login
+      email: admin@example.com
+      password: password
+      waf_selector: '#waf'
+      email_selector: '#email'
+      password_selector: '#password'
+      submit_selector: '#submit-button'
+      response_selector: 'input[name="cf-turnstile-response"]'
+      success_selector: 'div.product-item'
+      success_url_contains: '/dashboard'
 
   - id: indeed_cloudflare
     name: Indeed
@@ -54,9 +59,7 @@ targets:
       fields:
         job_title:
           selector: '.jcs-JobTitle'
-    browserless:
-      endpoint: unblock
-      proxy: residential
+
 
   - id: leboncoin
     name: Leboncoin
@@ -68,30 +71,19 @@ targets:
       fields:
         listing_title:
           selector: 'p.text-body-1-highlight'
-    browserless:
-      endpoint: unblock
-      proxy: residential
 
   - id: footlocker
     name: Foot Locker UK
     url: https://www.footlocker.co.uk/en/category/men/shoes/sneakers.html
     protection: akamai
-
     extraction:
       record_selector: '[data-testid="ProductCardV3"]'
       min_records: 10
-
       fields:
         product_name:
           selector: '.ProductName-primary'
-
         price:
           selector: '[data-testid="ProductPrice"]'
-
         product_url:
           selector: 'a.ProductCard-link'
           attribute: href
-
-    browserless:
-      endpoint: unblock
-      proxy: residential

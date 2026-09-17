@@ -1,21 +1,4 @@
 targets:
-  - id: scrapingcourse_baseline
-    name: ScrapingCourse
-    url: https://www.scrapingcourse.com/ecommerce/
-    protection: none
-    extraction:
-      record_selector: 'li.product[data-products="item"]'
-      expected_records: 16
-      fields:
-        product_name:
-          selector: 'h2.product-name'
-        price:
-          selector: 'span[data-testid="product-price"]'
-        product_url:
-          selector: 'a.woocommerce-LoopProduct-link'
-          attribute: href
-
-
   - id: scrapingcourse_turnstile_login
     name: ScrapingCourse Turnstile Login
     url: https://www.scrapingcourse.com/login/cf-turnstile
@@ -46,44 +29,3 @@ targets:
       response_selector: 'input[name="cf-turnstile-response"]'
       success_selector: 'div.product-item'
       success_url_contains: '/dashboard'
-
-  - id: indeed_cloudflare
-    name: Indeed
-    url: https://www.indeed.com/jobs?q=Python+Developer
-    protection: cloudflare
-
-    extraction:
-      record_selector: '.cardOutline'
-      min_records: 1
-
-      fields:
-        job_title:
-          selector: '.jcs-JobTitle'
-
-
-  - id: leboncoin
-    name: Leboncoin
-    url: https://www.leboncoin.fr/c/voitures
-    protection: datadome
-    extraction:
-      record_selector: 'article[aria-label]'
-      min_records: 10
-      fields:
-        listing_title:
-          selector: 'p.text-body-1-highlight'
-
-  - id: footlocker
-    name: Foot Locker UK
-    url: https://www.footlocker.co.uk/en/category/men/shoes/sneakers.html
-    protection: akamai
-    extraction:
-      record_selector: '[data-testid="ProductCardV3"]'
-      min_records: 10
-      fields:
-        product_name:
-          selector: '.ProductName-primary'
-        price:
-          selector: '[data-testid="ProductPrice"]'
-        product_url:
-          selector: 'a.ProductCard-link'
-          attribute: href

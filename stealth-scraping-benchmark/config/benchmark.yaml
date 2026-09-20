@@ -5,7 +5,7 @@ benchmark:
   save_screenshots: false
   output_dir: results
   approaches:
-    - firecrawl
-    - browserless
     - surfsky
-    - seleniumbase
+    # - firecrawl
+    # - browserless
+    # - seleniumbase

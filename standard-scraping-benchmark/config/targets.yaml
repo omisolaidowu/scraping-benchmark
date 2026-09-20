@@ -1,76 +1,57 @@
 targets:
-  - id: scrapingcourse_baseline
-    name: ScrapingCourse
-    url: https://www.scrapingcourse.com/ecommerce/
-    protection: none
+  # - id: scrapingcourse_baseline
+  #   name: ScrapingCourse
+  #   url: https://www.scrapingcourse.com/ecommerce/
+  #   protection: none
 
-    extraction:
-      record_selector: 'li.product[data-products="item"]'
-      expected_records: 16
+  #   extraction:
+  #     record_selector: 'li.product[data-products="item"]'
+  #     expected_records: 16
 
-      fields:
-        product_name:
-          selector: 'h2.product-name'
+  #     fields:
+  #       product_name:
+  #         selector: 'h2.product-name'
 
-        price:
-          selector: 'span[data-testid="product-price"]'
+  #       price:
+  #         selector: 'span[data-testid="product-price"]'
 
-        product_url:
-          selector: 'a.woocommerce-LoopProduct-link'
-          attribute: href
+  #       product_url:
+  #         selector: 'a.woocommerce-LoopProduct-link'
+  #         attribute: href
 
-    browserless:
-      endpoint: content
+  #   browserless:
+  #     endpoint: content
 
+  # - id: indeed_cloudflare
+  #   name: Indeed
+  #   url: https://www.indeed.com/jobs?q=Python+Developer
+  #   protection: cloudflare
 
-  - id: scrapingcourse_cloudflare
-    name: ScrapingCourse Cloudflare Challenge
-    url: https://www.scrapingcourse.com/cloudflare-challenge
-    protection: cloudflare
+  #   extraction:
+  #     record_selector: '.cardOutline'
+  #     min_records: 1
 
-    extraction:
-      record_selector: 'div#challenge-info[data-testid="challenge-info"]'
-      expected_records: 1
+  #     fields:
+  #       job_title:
+  #         selector: '.jcs-JobTitle'
+  #   browserless:
+  #     endpoint: unblock
+  #     proxy: residential
 
-      fields:
-        challenge_status:
-          selector: 'h2#challenge-title[data-testid="challenge-title"]'
-          expected_text: 'You bypassed the Cloudflare challenge! :D'
+  # - id: leboncoin
+  #   name: Leboncoin
+  #   url: https://www.leboncoin.fr/c/voitures
+  #   protection: datadome
+  #   extraction:
+  #     record_selector: 'article[aria-label]'
+  #     min_records: 10
+  #     fields:
+  #       listing_title:
+  #         selector: 'p.text-body-1-highlight'
+  #   browserless:
+  #     endpoint: unblock
+  #     proxy: residential
 
-    browserless:
-      endpoint: unblock
-      proxy: residential
-
-
-  - id: indeed_cloudflare
-    name: Indeed
-    url: https://www.indeed.com/jobs?q=Python+Developer
-    protection: cloudflare
-
-    extraction:
-      record_selector: '.cardOutline'
-      min_records: 1
-
-      fields:
-        job_title:
-          selector: '.jcs-JobTitle'
-    browserless:
-      endpoint: unblock
-      proxy: residential
-
-  - id: leboncoin
-    name: Leboncoin
-    url: https://www.leboncoin.fr/c/voitures
-    protection: datadome
-    extraction:
-      record_selector: 'article[aria-label]'
-      min_records: 10
-      fields:
-        listing_title:
-          selector: 'p.text-body-1-highlight'
-    browserless:
-      endpoint: unblock
-      proxy: residential
 
   - id: footlocker
     name: Foot Locker UK
@@ -82,15 +63,9 @@ targets:
       min_records: 10
 
       fields:
-        product_name:
-          selector: '.ProductName-primary'
 
         price:
           selector: '[data-testid="ProductPrice"]'
-
-        product_url:
-          selector: 'a.ProductCard-link'
-          attribute: href
 
     browserless:
       endpoint: unblock

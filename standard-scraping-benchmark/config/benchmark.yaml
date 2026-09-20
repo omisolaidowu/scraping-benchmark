@@ -10,7 +10,8 @@ benchmark:
   output_dir: results
 
   approaches:
-    - firecrawl
-    - browserless
-    - seleniumbase
     - surfsky
+    # - firecrawl
+    # - browserless
+    # - seleniumbase
+    

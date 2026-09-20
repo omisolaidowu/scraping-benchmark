@@ -52,10 +52,6 @@ targets:
       record_selector: '[data-testid="ProductCardV3"]'
       min_records: 10
       fields:
-        product_name:
-          selector: '.ProductName-primary'
+
         price:
           selector: '[data-testid="ProductPrice"]'
-        product_url:
-          selector: 'a.ProductCard-link'
-          attribute: href

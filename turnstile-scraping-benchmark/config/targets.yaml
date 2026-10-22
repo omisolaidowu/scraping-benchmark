@@ -29,3 +29,6 @@ targets:
       response_selector: 'input[name="cf-turnstile-response"]'
       success_selector: 'div.product-item'
       success_url_contains: '/dashboard'
+
+    surfsky:
+      proxy_country: null

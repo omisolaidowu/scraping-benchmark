@@ -33,7 +33,10 @@ The BrowserQL workflow:
 
 ### Surfsky
 
-Uses Surfsky's cloud browser with the Turnstile login workflow defined in the target configuration.
+Uses the surfsky-py SDK (`client.browser()`) with a macOS fingerprint and the
+anti-captcha solver on auto-solve. Once the Turnstile response field has a token, the browser fills in the login form the
+way Playwright's `fill` does and submits it, clicking again if the first click didn't
+start a navigation.
 
 The workflow must complete the login process and reach the authenticated dashboard before the returned page is passed to the same extraction and validation process used by the other approaches.
 
@@ -79,3 +82,4 @@ Post-response cleanup is excluded from the timed interval where applicable.
 copy .env.example .env
 
 python -m benchmark.runner
+```

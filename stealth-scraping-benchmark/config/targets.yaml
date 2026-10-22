@@ -43,6 +43,8 @@ targets:
     browserless:
       endpoint: unblock
       proxy: residential
+    surfsky:
+      proxy_country: fr
 
   - id: footlocker
     name: Foot Locker UK
@@ -55,3 +57,5 @@ targets:
 
         price:
           selector: '[data-testid="ProductPrice"]'
+    surfsky:
+      proxy_country: gb

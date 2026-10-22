@@ -1,51 +1,48 @@
 from __future__ import annotations
 
+import asyncio
 import time
 from contextlib import suppress
 from typing import Any
 
 from dotenv import load_dotenv
-from patchright.sync_api import TimeoutError as PlaywrightTimeoutError
-from patchright.sync_api import sync_playwright
-from surfsky import Surfsky
+from surfsky import (
+    AntiCaptcha,
+    AsyncSurfsky,
+    BrowserSettings,
+    BrowserTimeoutError,
+    CDPError,
+    Fingerprint,
+    PremiumProxy,
+)
 
 from .base import ScrapeResult
 
 load_dotenv()
 
-AUTO_CAPTCHA_TYPES = ["turnstile", "recaptcha", "datadome"]
+
+async def read_page(browser: Any) -> tuple[str, str]:
+    for _ in range(5):
+        try:
+            return await browser.content(), await browser.title()
+        except CDPError:
+            await asyncio.sleep(2)
+    return await browser.content(), await browser.title()
 
 
 class SurfskyScraper:
-    """Surfsky cloud browser via Patchright/CDP with CAPTCHA solving."""
+    """Surfsky cloud browser through the surfsky-py SDK"""
 
     name = "surfsky"
 
     def __init__(self, timeout_seconds: int = 60):
-        self.client = Surfsky()
         self.timeout_seconds = timeout_seconds
 
-    def _start_session(self) -> dict[str, Any]:
-        body: dict[str, Any] = {
-            "anti_captcha": {
-                "enabled": True,
-                "auto_captcha_types": AUTO_CAPTCHA_TYPES,
-            },
-            "browser_settings": {
-                "inactive_kill_timeout": self.timeout_seconds + 10,
-            },
-        }
-
-        response = self.client.request("POST", "/profiles/one_time", json=body)
-        if response.is_error:
-            raise RuntimeError(
-                f"Session start failed: HTTP {response.status_code} - {response.text}"
-            )
-
-        return response.json()
-
     def scrape(self, target: dict[str, Any]) -> ScrapeResult:
-        started = time.perf_counter()
+        return asyncio.run(self._scrape(target))
+
+    async def _scrape(self, target: dict[str, Any]) -> ScrapeResult:
+        country = (target.get("surfsky") or {}).get("proxy_country", "us")
         captcha_events: list[dict[str, Any]] = []
         result = ScrapeResult(
             approach=self.name,
@@ -54,68 +51,60 @@ class SurfskyScraper:
             success=False,
             elapsed_ms=0,
             metadata={
-                "browser": "surfsky_cdp",
-                "playwright_variant": "patchright",
-                "anti_captcha": True,
-                "auto_captcha_types": AUTO_CAPTCHA_TYPES,
+                "sdk": "surfsky-py",
+                "proxy": f"premium:{country}",
+                "fingerprint": "mac/x86",
+                "anti_captcha": "auto_solve",
                 "captcha_events": captcha_events,
             },
         )
-        internal_uuid: str | None = None
 
+        started = time.perf_counter()
         try:
-            session = self._start_session()
-            internal_uuid = session["internal_uuid"]
-            result.metadata["internal_uuid"] = internal_uuid
-
-            with sync_playwright() as p:
-                browser = p.chromium.connect_over_cdp(session["ws_url"])
-                context = browser.contexts[0]
-                page = context.pages[0] if context.pages else context.new_page()
-
-                cdp = context.new_cdp_session(page)
+            async with (
+                AsyncSurfsky() as client,
+                client.browser(
+                    fingerprint=Fingerprint(os="mac", os_arch="x86"),
+                    proxy=PremiumProxy(country=country),
+                    anti_captcha=AntiCaptcha(enabled=True),
+                    browser_settings=BrowserSettings(
+                        inactive_kill_timeout=self.timeout_seconds + 30,
+                    ),
+                    command_timeout=90,
+                ) as browser,
+            ):
+                result.metadata["internal_uuid"] = browser.internal_uuid
                 for event in ("Captcha.solveCompleted", "Captcha.solveFailed"):
-                    cdp.on(
+                    browser.cdp.on(
                         event,
-                        lambda params, event=event: captcha_events.append(
-                            {"event": event, **params}
+                        lambda params, _sid, event=event: captcha_events.append(
+                            {"event": event, "type": params.get("type"), "status": params.get("status")}
                         ),
                     )
-                cdp.send("Captcha.autoSolve")
-
                 try:
-                    page.goto(
+                    # Solve any captcha the target shows from here on.
+                    await browser.send("Captcha.autoSolve")
+                    await browser.goto(
                         target["url"],
                         wait_until="domcontentloaded",
-                        timeout=self.timeout_seconds * 1000,
+                        timeout=self.timeout_seconds,
                     )
-
                     remaining = started + self.timeout_seconds - time.perf_counter()
-                    try:
-                        page.wait_for_selector(
+                    with suppress(BrowserTimeoutError):
+                        await browser.wait_for_selector(
                             target["extraction"]["record_selector"],
-                            state="attached",
-                            timeout=max(remaining, 1) * 1000,
+                            visible=False,
+                            timeout=max(remaining, 1),
                         )
-                    except PlaywrightTimeoutError:
-                        pass
 
-                    result.html = page.content()
-                    result.title = page.title()
+                    result.html, result.title = await read_page(browser)
+                    result.status_code = browser.status
                     result.success = bool(result.html)
-
                 finally:
                     result.elapsed_ms = (time.perf_counter() - started) * 1000
 
         except Exception as exc:
             result.error = f"{type(exc).__name__}: {exc}"
-            result.elapsed_ms = (
-                result.elapsed_ms or (time.perf_counter() - started) * 1000
-            )
-
-        finally:
-            if internal_uuid:
-                with suppress(Exception):
-                    self.client.profiles.stop(internal_uuid)
+            result.elapsed_ms = result.elapsed_ms or (time.perf_counter() - started) * 1000
 
         return result

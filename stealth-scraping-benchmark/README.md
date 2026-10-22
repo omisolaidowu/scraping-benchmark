@@ -24,7 +24,10 @@ The browser navigates to the target, waits for the expected content selector, an
 
 ### Surfsky
 
-Uses Surfsky's cloud browser over CDP with Patchright, following Surfsky's recommended approach for browser automation against bot-protected sites.
+Uses the surfsky-py SDK (`client.browser()`) with a premium proxy in the target's
+country (`surfsky.proxy_country` in `config/targets.yaml`, `us` by default) and the anti-captcha solver on auto-solve.
+This is the same configuration as in the Standard benchmark: stealth is built into
+Surfsky by design, so there is no separate stealth mode.
 
 The same extraction and validation process is applied to the returned page content.
 
@@ -66,3 +69,4 @@ Post-response cleanup is excluded from the timed interval where applicable.
 copy .env.example .env
 
 python -m benchmark.runner
+```

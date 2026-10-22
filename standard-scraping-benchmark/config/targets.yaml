@@ -51,6 +51,8 @@ targets:
   #   browserless:
   #     endpoint: unblock
   #     proxy: residential
+  #   surfsky:
+  #     proxy_country: fr
 
 
   - id: footlocker
@@ -70,3 +72,5 @@ targets:
     browserless:
       endpoint: unblock
       proxy: residential
+    surfsky:
+      proxy_country: gb

@@ -29,8 +29,11 @@ No additional stealth configuration is introduced in the Standard benchmark.
 
 ### Surfsky
 
-Uses Surfsky's managed browser infrastructure over CDP using its standard
-browser configuration.
+Uses the surfsky-py SDK (`client.browser()`) with a premium proxy in the target's
+country (`surfsky.proxy_country` in `config/targets.yaml`, `us` by default) and the anti-captcha solver on auto-solve.
+
+Surfsky is an antidetect browser, so stealth is built in by design and there is no
+separate stealth mode to switch on.
 
 ## Methodology
 
@@ -98,3 +101,4 @@ From the repository root, install the shared benchmark dependencies:
 
 ```bash
 pip install -r requirements.txt
+```

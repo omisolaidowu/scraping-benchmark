@@ -1,8 +1,7 @@
 beautifulsoup4
 firecrawl-py
-patchright
 python-dotenv
 PyYAML
 requests
 seleniumbase
-surfsky
+surfsky>=0.0.16
